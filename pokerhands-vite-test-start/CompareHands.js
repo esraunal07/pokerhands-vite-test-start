@@ -39,14 +39,52 @@ export default class CompareHands {
     return this.isStraight(hand) && this.isFlush(hand);
   }
 
-  static isFourOfAKind(hand) { // TODO!
-    return 0;
+  static isFourOfAKind(hand) {
+    let ranks = hand.cards.map(card => card.rank);
+    let rankCount = {};
+    
+    for (let rank of ranks) {
+      rankCount[rank] = (rankCount[rank] || 0) + 1;
+    }
+  
+    for (let rank in rankCount) {
+      if (rankCount[rank] === 4) {
+        return this.rankToPoint(rank) * 10000; // Yüksek bir değer verelim
+      }
+    }
+  
+    return 0; // Dört aynı kart yok
   }
-
-  static isFullHouse(hand) { // TODO!
-    return 0;
+  
+  static isFullHouse(hand) {
+    let ranks = hand.cards.map(card => card.rank);
+    let rankCount = {};
+  
+    for (let rank of ranks) {
+      rankCount[rank] = (rankCount[rank] || 0) + 1;
+    }
+  
+    let hasThreeOfAKind = false;
+    let hasPair = false;
+    let score = 0;
+  
+    for (let rank in rankCount) {
+      if (rankCount[rank] === 3) {
+        hasThreeOfAKind = true;
+        score += this.rankToPoint(rank) * 1000;
+      } else if (rankCount[rank] === 2) {
+        hasPair = true;
+        score += this.rankToPoint(rank) * 100;
+      }
+    }
+  
+    if (hasThreeOfAKind && hasPair) {
+      return score;
+    }
+  
+    return 0; // Full house değil
   }
-
+  
   static isFlush(hand) {
     let suits = [];
     for (let card of hand.cards) {
@@ -84,22 +122,64 @@ export default class CompareHands {
     return this.rankToPoint(ranks[4]);
   }
 
-  static isThreeOfAKind(hand) { // TODO!
-    return 0;
+  static isThreeOfAKind(hand) {
+    let ranks = hand.cards.map(card => card.rank);
+    let rankCount = {};
+  
+    for (let rank of ranks) {
+      rankCount[rank] = (rankCount[rank] || 0) + 1;
+    }
+  
+    for (let rank in rankCount) {
+      if (rankCount[rank] === 3) {
+        return this.rankToPoint(rank) * 1000; // Üçlü olduğu için yüksek puan verelim
+      }
+    }
+  
+    return 0; // Üçlü yok
   }
-
-  static isTwoPair(hand) { // TODO!
-    return 0;
+  static isTwoPair(hand) {
+    let ranks = hand.cards.map(card => card.rank);
+    let rankCount = {};
+    let pairs = [];
+  
+    for (let rank of ranks) {
+      rankCount[rank] = (rankCount[rank] || 0) + 1;
+    }
+  
+    for (let rank in rankCount) {
+      if (rankCount[rank] === 2) {
+        pairs.push(rank);
+      }
+    }
+  
+    if (pairs.length === 2) {
+      return this.rankToPoint(pairs[0]) * 100 + this.rankToPoint(pairs[1]) * 100;
+    }
+  
+    return 0; // İki çift yok
   }
-
-  static isOnePair(hand) { // TODO!
-    return 0;
+  static isOnePair(hand) {
+    let ranks = hand.cards.map(card => card.rank);
+    let rankCount = {};
+  
+    for (let rank of ranks) {
+      rankCount[rank] = (rankCount[rank] || 0) + 1;
+    }
+  
+    for (let rank in rankCount) {
+      if (rankCount[rank] === 2) {
+        return this.rankToPoint(rank) * 100; // Çift için puan verelim
+      }
+    }
+  
+    return 0; // Çift yok
   }
-
-  static isHighestCard(hand) { // TODO!
-    return 0;
+  
+  static isHighestCard(hand) {
+    this.sortByRank(hand);
+    return this.rankToPoint(hand.cards[hand.cards.length - 1].rank); // En yüksek kartın puanını döner
   }
-
   // helper functions below:
 
   static rankToPoint(rank) {
@@ -112,6 +192,4 @@ export default class CompareHands {
         -1 : 1;
     });
   }
-
-
 }

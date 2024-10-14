@@ -1,26 +1,27 @@
 import Card from './Card.js';
 
 export default class Hand {
-
   constructor(...cards) {
+    // Ensure the hand consists of exactly 5 cards
     if (cards.length !== 5) {
       throw new Error('A hand must be 5 cards!');
     }
-    // convert from to strings to card if needed
-    // (allow strings on the form ♥9)
-    for (let i = 0; i < 5; i++) {
-      if (typeof cards[i] === 'string') {
-        cards[i] = new Card(cards[i][0], cards[i][1]);
+
+    this.cards = cards.map(card => {
+      // Create a new Card instance for string representations of cards
+      if (typeof card === 'string') {
+        // Check if the card string is valid
+        if (card.length !== 2) {
+          throw new Error('A non card found in your hand!'); // Error for invalid card
+        }
+        return new Card(card[0], card[1]);
       }
-    }
-    // if not all cards are instances of Card throw error
-    for (let card of cards) {
+      
+      // Check if the card is a valid Card instance
       if (!(card instanceof Card)) {
         throw new Error('A non card found in your hand!');
       }
-    }
-    // set the hand
-    this.cards = cards;
+      return card;
+    });
   }
-
 }
